@@ -1,11 +1,11 @@
-# Team DOLLAR $IGN (C06)
+# TEAM DOLLAR$IGN (C06)
 
 
 ## Problem Statement
 
 
 
-### Project Analysis: Aegis-DID
+#### Project Analysis: Aegis-DID
 
 ## What is the Problem?
 
@@ -53,10 +53,11 @@ I am building Aegis-DID (Agentic Ephemeral Governance & Identity System), a dece
 
  * It is designed to run in modern orchestration environments like Kubernetes and Docker, ensuring that every AI workload has a verified, verifiable, and temporary identity
 
-## How does it solve the problem?
+### How does it solve the problem?
 
 # Traditional security models fail because they only verify an identity at the initial login, which is insufficient for AI agents that maintain long, persistent sessions
-* Aegis-DID solves this by shifting to a continuous identity verification model
+
+* **Aegis-DID solves this by shifting to a continuous identity verification model**
 
 * **Eliminating Static Risk:** Instead of using permanent API keys, the system issues highly ephemeral cryptographic identity documents (SVIDs) that expire in minutes or seconds, reducing the time a stolen credential can be used by 75%
 
@@ -66,10 +67,10 @@ I am building Aegis-DID (Agentic Ephemeral Governance & Identity System), a dece
 
 * **Autonomous Containment:** If the system detects suspicious behavior, the agent’s Trust Score drops
 
-# This immediately triggers the Open Policy Agent (OPA) to autonomously strip the agent of its permissions or use Kubernetes NetworkPolicies to physically isolate the compromised pod, "self-healing" the perimeter at machine speed
+* **This immediately triggers the Open Policy Agent (OPA) to autonomously strip the agent of its permissions or use Kubernetes NetworkPolicies to physically isolate the compromised pod, "self-healing" the perimeter at machine speed**
 
  ## What makes your solution unique?
-# Our approach is unique because it moves beyond simple authentication to dynamic, behavior-gated governance
+* **Our approach is unique because it moves beyond simple authentication to dynamic, behavior-gated governance**
 
 * **Zero-Instrumentation Monitoring:** By using eBPF, we can monitor an agent's activities at the kernel level without needing to modify the agent's code or adding any performance latency
 
