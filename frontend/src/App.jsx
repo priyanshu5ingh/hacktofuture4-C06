@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Shield, Fingerprint, Activity, Zap, Lock, AlertTriangle, Play, RotateCcw, User, ScanFace, X, ShieldCheck, ShieldX, MousePointer2, Keyboard, Eye, Cpu, MapPin, CheckCircle } from 'lucide-react'
+import { Shield, Fingerprint, Activity, Zap, Lock, AlertTriangle, Play, RotateCcw, User, ScanFace, X, ShieldCheck, ShieldX, MousePointer2, Keyboard, Eye, Cpu, MapPin, CheckCircle, ShieldAlert } from 'lucide-react'
 import CommandCenter from './components/CommandCenter'
 import IdentityView from './components/IdentityView'
 import TelemetryView from './components/TelemetryView'
