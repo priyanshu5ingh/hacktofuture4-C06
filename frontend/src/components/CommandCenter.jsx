@@ -1,5 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
-import { ChevronRight, Fingerprint, Activity, Zap, Lock } from 'lucide-react'
+import { ChevronRight, Fingerprint, Activity, Zap, Lock, User, Shield, Link2, MousePointer2, Keyboard, Eye } from 'lucide-react'
 
 const STAGES = [
   { id:'L1', label:'IDENTITY',     sub:'SPIRE / mTLS',       color:'sky',    icon: Fingerprint, detail:'X.509 SVID auto-rotation every 60s' },
@@ -25,12 +25,12 @@ const Tip = ({ active, payload }) => {
   )
 }
 
-export default function CommandCenter({ trustScore, trustHistory, isUnderAttack }) {
+export default function CommandCenter({ trustScore, trustHistory, isUnderAttack, humanTrustScore, compositeTrust, behavioralEvents, autonomyMode }) {
   const kpis = [
-    { label:'TRUST SCORE',       value:`${trustScore}%`, color: isUnderAttack ? 'text-rose-500' : 'text-emerald-400', sub: isUnderAttack ? '↓ CRITICAL DRIFT' : '↑ NOMINAL' },
-    { label:'ACTIVE SVIDs',      value:'2,847',          color:'text-sky-400',    sub:'60s TTL' },
-    { label:'eBPF EVENTS/S',     value:'14.2k',          color:'text-violet-400', sub:'48 kprobes' },
-    { label:'POLICY VIOLATIONS', value: isUnderAttack ? '1' : '0', color: isUnderAttack ? 'text-rose-500' : 'text-slate-500', sub: isUnderAttack ? '⚠ SIGKILL FIRED' : 'All clear' },
+    { label:'AGENT TRUST',         value:`${trustScore}%`,       color: isUnderAttack ? 'text-rose-500' : 'text-emerald-400', sub: isUnderAttack ? 'CRITICAL DRIFT' : 'NOMINAL' },
+    { label:'HUMAN TRUST',         value:`${humanTrustScore}%`,  color: humanTrustScore > 90 ? 'text-violet-400' : humanTrustScore > 50 ? 'text-amber-400' : 'text-rose-500', sub: 'Behavioral Biometrics' },
+    { label:'COMPOSITE TRUST',     value:`${compositeTrust}%`,   color: compositeTrust > 80 ? 'text-emerald-400' : compositeTrust > 40 ? 'text-amber-400' : 'text-rose-500', sub: 'f(agent, human) weighted' },
+    { label:'POLICY VIOLATIONS',   value: isUnderAttack ? '1' : '0', color: isUnderAttack ? 'text-rose-500' : 'text-slate-500', sub: isUnderAttack ? 'SIGKILL FIRED' : 'All clear' },
   ]
 
   return (
@@ -44,6 +44,144 @@ export default function CommandCenter({ trustScore, trustHistory, isUnderAttack 
             <p className="text-[9px] text-slate-600 mt-2">{k.sub}</p>
           </div>
         ))}
+      </div>
+
+      {/* Composite Principal Binding Card */}
+      <div className="glass rounded-xl p-6 border border-violet-500/20">
+        <p className="text-[9px] tracking-widest text-slate-500 mb-5">COMPOSITE PRINCIPAL — SUBJECT-ACTOR TRUST BINDING</p>
+        <div className="grid grid-cols-7 gap-3 items-center">
+
+          {/* Human (Subject) */}
+          <div className="col-span-2 bg-violet-500/5 rounded-xl border border-violet-500/20 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center">
+                <User className="w-4 h-4 text-violet-400" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black tracking-widest text-violet-400">SUBJECT (HUMAN)</p>
+                <p className="text-[9px] text-slate-500">Sarah_Admin (Active Session)</p>
+              </div>
+            </div>
+            <div className="space-y-1.5 text-[9px] font-mono">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Auth Method</span>
+                <span className="text-violet-400">WebAuthn / FIDO2</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">OIDC Token</span>
+                <span className="text-emerald-400">VALID</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Trust Score</span>
+                <span className={`font-bold ${humanTrustScore > 90 ? 'text-emerald-400' : 'text-rose-500'}`}>{humanTrustScore}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Biometrics</span>
+                <span className="text-violet-400 flex items-center gap-1">
+                  <MousePointer2 className="w-2.5 h-2.5" />
+                  <Keyboard className="w-2.5 h-2.5" />
+                  ACTIVE
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Keystrokes</span>
+                <span className="text-slate-300">{behavioralEvents.keystrokes.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Mouse Travel</span>
+                <span className="text-slate-300">{(behavioralEvents.mouseDistance / 1000).toFixed(1)}k px</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Binding Chain */}
+          <div className="col-span-3 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
+              <div className="flex-1 h-px bg-gradient-to-r from-violet-500/50 to-transparent" />
+              <div className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/50 flex items-center gap-2">
+                <Link2 className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-[8px] font-black tracking-widest text-amber-400">OIDC-to-SPIFFE DELEGATION</span>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-l from-sky-500/50 to-transparent" />
+            </div>
+
+            {/* Trust Formula */}
+            <div className="bg-black/50 rounded-xl border border-slate-700/30 px-5 py-3 text-center w-full">
+              <p className="text-[8px] text-slate-500 tracking-widest mb-1.5">COMPOSITE TRUST FORMULA</p>
+              <p className="text-xs font-mono">
+                <span className="text-amber-400">T</span>
+                <span className="text-slate-500">(composite)</span>
+                <span className="text-white"> = </span>
+                <span className="text-violet-400">0.5</span>
+                <span className="text-slate-500"> * </span>
+                <span className="text-violet-400">T</span>
+                <span className="text-slate-600">(human)</span>
+                <span className="text-white"> + </span>
+                <span className="text-sky-400">0.5</span>
+                <span className="text-slate-500"> * </span>
+                <span className="text-sky-400">T</span>
+                <span className="text-slate-600">(agent)</span>
+              </p>
+              <p className={`text-lg font-black mt-1 ${compositeTrust > 80 ? 'text-emerald-400' : compositeTrust > 40 ? 'text-amber-400' : 'text-rose-500'}`}>
+                = {compositeTrust}%
+              </p>
+            </div>
+
+            {/* Autonomy Level */}
+            <div className="flex items-center gap-2 text-[8px]">
+              <Eye className="w-3 h-3 text-slate-500" />
+              <span className="text-slate-500">Autonomy Level:</span>
+              <span className={`font-black tracking-widest ${
+                autonomyMode === 'Auto' ? 'text-emerald-400' : autonomyMode === 'Watch' ? 'text-amber-400' : 'text-sky-400'
+              }`}>{autonomyMode.toUpperCase()}</span>
+              <span className="text-slate-600">|</span>
+              <span className="text-slate-500">
+                {autonomyMode === 'Watch' ? 'Agent observes, human decides' :
+                 autonomyMode === 'Assist' ? 'Agent recommends, human approves' :
+                 'Agent acts, human monitors'}
+              </span>
+            </div>
+          </div>
+
+          {/* Agent (Actor) */}
+          <div className="col-span-2 bg-sky-500/5 rounded-xl border border-sky-500/20 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-full bg-sky-500/20 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-sky-400" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black tracking-widest text-sky-400">ACTOR (AGENT)</p>
+                <p className="text-[9px] text-slate-500">SENTINEL-01</p>
+              </div>
+            </div>
+            <div className="space-y-1.5 text-[9px] font-mono">
+              <div className="flex justify-between">
+                <span className="text-slate-500">SPIFFE ID</span>
+                <span className="text-sky-400 text-[8px]">spiffe://aegis.did/.../01</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">mTLS</span>
+                <span className="text-emerald-400">ESTABLISHED</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Trust Score</span>
+                <span className={`font-bold ${trustScore > 80 ? 'text-emerald-400' : 'text-rose-500'}`}>{trustScore}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Monitoring</span>
+                <span className="text-sky-400">eBPF kprobes</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">eBPF Events/s</span>
+                <span className="text-slate-300">14.2k</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">SVID TTL</span>
+                <span className="text-amber-400">60s rotation</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Pipeline */}
@@ -84,7 +222,7 @@ export default function CommandCenter({ trustScore, trustHistory, isUnderAttack 
             {isUnderAttack ? 'CRITICAL — INTENT DRIFT' : 'NOMINAL'}
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer width="100%" height={200}>
           <LineChart data={trustHistory} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
             <XAxis dataKey="time" tick={{ fill: '#475569', fontSize: 9 }} interval="preserveStartEnd" />

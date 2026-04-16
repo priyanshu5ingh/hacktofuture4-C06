@@ -1,4 +1,5 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { Brain, ShieldAlert } from 'lucide-react'
 
 const AreaTip = ({ active, payload }) => {
   if (!active || !payload?.length) return null
@@ -25,11 +26,11 @@ function GaugeRing({ score, isUnderAttack }) {
         </svg>
         <div className="text-center">
           <p className="text-5xl font-black" style={{ color }}>{(score / 100).toFixed(3)}</p>
-          <p className="text-[10px] text-slate-500 mt-1">cos(θ)</p>
+          <p className="text-[10px] text-slate-500 mt-1">cos(theta)</p>
         </div>
       </div>
       <p className={`text-[10px] font-black tracking-widest ${isUnderAttack ? 'text-rose-500 animate-pulse' : 'text-emerald-400'}`}>
-        {isUnderAttack ? '⚠ INTENT DRIFT DETECTED' : '● NOMINAL BEHAVIOR'}
+        {isUnderAttack ? 'INTENT DRIFT DETECTED' : 'NOMINAL BEHAVIOR'}
       </p>
     </div>
   )
@@ -46,7 +47,7 @@ export default function AnalyticsView({ trustScore, trustHistory, isUnderAttack 
         <div className="glass rounded-xl p-6">
           <p className="text-[9px] tracking-widest text-slate-500 mb-4">ACTIVE ML MODEL</p>
           <p className="text-lg font-black text-white mb-0.5">all-MiniLM-L6-v2</p>
-          <p className="text-[10px] text-slate-500 mb-5">sentence-transformers · HuggingFace</p>
+          <p className="text-[10px] text-slate-500 mb-5">sentence-transformers / HuggingFace</p>
           <div className="space-y-2 font-mono text-[10px]">
             {[
               ['Dimensions',  '384'],
@@ -66,7 +67,7 @@ export default function AnalyticsView({ trustScore, trustHistory, isUnderAttack 
 
         {/* Cosine Gauge */}
         <div className="glass rounded-xl p-6 flex flex-col items-center justify-center">
-          <p className="text-[9px] tracking-widest text-slate-500 mb-4">COSINE SIMILARITY — LIVE</p>
+          <p className="text-[9px] tracking-widest text-slate-500 mb-4">COSINE SIMILARITY - LIVE</p>
           <GaugeRing score={trustScore} isUnderAttack={isUnderAttack} />
         </div>
 
@@ -77,19 +78,19 @@ export default function AnalyticsView({ trustScore, trustHistory, isUnderAttack 
             <div>
               <p className="text-slate-500 text-[10px] mb-3">Cosine Similarity</p>
               <div className="flex items-center justify-center gap-2 text-xl">
-                <span className="text-white">cos(θ)&nbsp;=</span>
+                <span className="text-white">cos(theta)&nbsp;=</span>
                 <div className="inline-flex flex-col items-center">
-                  <span className="text-emerald-400 border-b border-slate-500 pb-1 px-3">A · B</span>
-                  <span className="text-sky-400 pt-1 px-3">‖A‖ · ‖B‖</span>
+                  <span className="text-emerald-400 border-b border-slate-500 pb-1 px-3">A . B</span>
+                  <span className="text-sky-400 pt-1 px-3">||A|| . ||B||</span>
                 </div>
               </div>
             </div>
             <div className="text-[10px] text-left space-y-1.5 border-t border-slate-800 pt-4">
               <p><span className="text-emerald-400">A</span> = assigned intent vector (384-dim)</p>
               <p><span className="text-sky-400">B</span> = observed behavior vector (384-dim)</p>
-              <p><span className="text-amber-400">θ &lt; 0.50</span> → intent drift → ENFORCEMENT</p>
+              <p><span className="text-amber-400">theta &lt; 0.50</span> = intent drift = ENFORCEMENT</p>
               <p><span className="text-rose-400">Current: {(trustScore / 100).toFixed(3)}</span>
-                {isUnderAttack ? <span className="text-rose-500 font-bold"> → DRIFT!</span> : <span className="text-emerald-500"> → SAFE</span>}
+                {isUnderAttack ? <span className="text-rose-500 font-bold"> = DRIFT!</span> : <span className="text-emerald-500"> = SAFE</span>}
               </p>
             </div>
           </div>
@@ -98,7 +99,7 @@ export default function AnalyticsView({ trustScore, trustHistory, isUnderAttack 
 
       {/* Intent Drift Chart */}
       <div className="glass rounded-xl p-6">
-        <p className="text-[9px] tracking-widest text-slate-500 mb-4">INTENT DRIFT ANALYSIS — ROLLING WINDOW</p>
+        <p className="text-[9px] tracking-widest text-slate-500 mb-4">INTENT DRIFT ANALYSIS - ROLLING WINDOW</p>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={trustHistory} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
             <defs>
@@ -142,6 +143,56 @@ export default function AnalyticsView({ trustScore, trustHistory, isUnderAttack 
           ))}
         </div>
       </div>
+
+      {/* Reasoning Trace — Explainability on Demand */}
+      <div className={`glass rounded-xl p-6 border transition-all duration-700 ${isUnderAttack ? 'border-rose-500/30' : 'border-emerald-500/10'}`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            {isUnderAttack
+              ? <ShieldAlert className="w-4 h-4 text-rose-500" />
+              : <Brain className="w-4 h-4 text-emerald-400" />
+            }
+            <p className="text-[9px] font-black tracking-widest text-slate-400">REASONING TRACE (EXPLAINABILITY ON DEMAND)</p>
+          </div>
+          <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded ${
+            isUnderAttack ? 'bg-rose-500/15 text-rose-400' : 'bg-emerald-500/10 text-emerald-500'
+          }`}>
+            {isUnderAttack ? 'ANOMALY DETECTED' : 'SYMMETRIC'}
+          </span>
+        </div>
+        <div className={`bg-black/50 rounded-xl p-5 border font-mono text-[11px] leading-relaxed transition-all duration-700 ${
+          isUnderAttack ? 'border-rose-500/20' : 'border-slate-700/30'
+        }`}>
+          {isUnderAttack ? (
+            <div className="space-y-3">
+              <p className="text-rose-500 font-bold">
+                Semantic Anomaly: Agent execution path &quot;Read /forbidden_secrets.txt&quot; deviates orthogonally from assigned objective. Exponential trust decay applied to TTL.
+              </p>
+              <div className="border-t border-rose-500/20 pt-3 space-y-1.5 text-[10px]">
+                <p><span className="text-slate-500">Assigned Task:</span> <span className="text-emerald-400">&quot;Monitor /etc/* and /var/log/* for config drift&quot;</span></p>
+                <p><span className="text-slate-500">Observed Action:</span> <span className="text-rose-400">&quot;file.read(/forbidden_secrets.txt)&quot;</span></p>
+                <p><span className="text-slate-500">Angle of Deviation:</span> <span className="text-rose-400">87.4 degrees (near-orthogonal)</span></p>
+                <p><span className="text-slate-500">Trust Decay Model:</span> <span className="text-amber-400">T(t) = T0 * e^(-lambda * delta) where lambda = 4.2</span></p>
+                <p><span className="text-slate-500">Verdict:</span> <span className="text-rose-500 font-bold">ENFORCE — Intent drift exceeds maximum allowable threshold</span></p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-emerald-400">
+                Agent actions align symmetrically with assigned task parameters. No semantic deviation detected.
+              </p>
+              <div className="border-t border-slate-700/30 pt-3 space-y-1.5 text-[10px]">
+                <p><span className="text-slate-500">Assigned Task:</span> <span className="text-emerald-400">&quot;Monitor /etc/* and /var/log/* for config drift&quot;</span></p>
+                <p><span className="text-slate-500">Observed Action:</span> <span className="text-sky-400">&quot;sys_read(/etc/resolv.conf)&quot;</span></p>
+                <p><span className="text-slate-500">Angle of Deviation:</span> <span className="text-emerald-400">2.1 degrees (within tolerance)</span></p>
+                <p><span className="text-slate-500">Trust Decay Model:</span> <span className="text-slate-400">T(t) = T0 (stable, no decay applied)</span></p>
+                <p><span className="text-slate-500">Verdict:</span> <span className="text-emerald-400 font-bold">ALLOW — Behavior within expected envelope</span></p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
+
