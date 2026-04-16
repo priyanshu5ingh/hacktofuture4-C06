@@ -160,8 +160,66 @@ function BiometricModal({ onApprove, onDeny }) {
   )
 }
 
-// ─── Main App ───────────────────────────────────────────────────────
+// ─── Authentication Boot Screen ────────────────────────────────────────
+function AuthenticationScreen({ onComplete }) {
+  const [phase, setPhase] = useState(0) // 0=idle, 1=oidc, 2=spiffe, 3=success
+
+  const handleLogin = () => {
+    if (phase !== 0) return
+    setPhase(1)
+    setTimeout(() => setPhase(2), 1500)
+    setTimeout(() => setPhase(3), 3000)
+    setTimeout(() => onComplete(), 4500)
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0a0f16] flex items-center justify-center text-slate-100 font-sans p-4 scanline relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-900/10 via-[#0a0f16] to-[#0a0f16] pointer-events-none" />
+      
+      <div className="max-w-md w-full relative z-10 glass rounded-2xl border border-slate-700/50 p-8 shadow-2xl">
+        <div className="text-center mb-8">
+          <Shield className="w-16 h-16 text-sky-400 mx-auto mb-4" />
+          <h1 className="text-2xl font-black tracking-widest text-white">AEGIS<span className="text-sky-400">-DID</span></h1>
+          <p className="text-xs text-slate-400 tracking-widest mt-2">AGENTIC SESSION DEFENDER</p>
+        </div>
+
+        {phase === 0 ? (
+          <button
+            onClick={handleLogin}
+            className="w-full py-4 px-6 bg-gradient-to-r from-sky-600 to-indigo-600 rounded-xl font-bold tracking-widest text-sm shadow-[0_0_20px_rgba(2,132,199,0.3)] hover:shadow-[0_0_30px_rgba(2,132,199,0.5)] transition-all flex items-center justify-center gap-3 animate-pulse-glow"
+          >
+            <User className="w-5 h-5" />
+            Authenticate (Sarah_Admin)
+          </button>
+        ) : (
+          <div className="space-y-4 font-mono text-xs">
+            <div className={`p-3 rounded-lg border flex items-center gap-3 transition-colors duration-500 ${phase >= 1 ? 'border-sky-500/30 bg-sky-500/10 text-sky-400' : 'border-slate-800 bg-slate-900/50 text-slate-600'}`}>
+              <CheckCircle className={`w-4 h-4 transition-opacity duration-300 ${phase >= 1 ? 'opacity-100' : 'opacity-0'}`} />
+              [1] Generating OIDC Token (Human Auth)
+            </div>
+            <div className={`p-3 rounded-lg border flex items-center gap-3 transition-colors duration-500 ${phase >= 2 ? 'border-amber-500/30 bg-amber-500/10 text-amber-400' : 'border-slate-800 bg-slate-900/50 text-slate-600'}`}>
+              <CheckCircle className={`w-4 h-4 transition-opacity duration-300 ${phase >= 2 ? 'opacity-100' : 'opacity-0'}`} />
+              [2] Binding to Workload (SENTINEL-01)
+            </div>
+            <div className={`p-3 rounded-lg border flex items-center gap-3 transition-colors duration-500 ${phase >= 3 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' : 'border-slate-800 bg-slate-900/50 text-slate-600'}`}>
+              <CheckCircle className={`w-4 h-4 transition-opacity duration-300 ${phase >= 3 ? 'opacity-100' : 'opacity-0'}`} />
+              [3] Issuing Composite SPIFFE ID
+            </div>
+            {phase >= 3 && (
+              <div className="text-center text-[10px] text-emerald-500 tracking-widest animate-pulse mt-4">
+                AUTHENTICATION SUCCESSFUL. REDIRECTING...
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Application ───────────────────────────────────────────────────────
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [activeTab, setActiveTab] = useState('command')
   const [trustScore, setTrustScore] = useState(94.2)
   const [trustHistory, setTrustHistory] = useState(() =>
@@ -380,6 +438,10 @@ export default function App() {
   // Route Hacker Terminal
   if (window.location.pathname === '/hacker') {
     return <HackerTerminal />
+  }
+
+  if (!isAuthenticated) {
+    return <AuthenticationScreen onComplete={() => setIsAuthenticated(true)} />
   }
 
   return (
