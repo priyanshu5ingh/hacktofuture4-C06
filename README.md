@@ -114,16 +114,108 @@ Immediate, machine-speed response to identity compromise.
 
 ## Tech Stack
 
+### Frontend
 
+- React 19
+- Vite
+- Tailwind CSS
+- Recharts
+- Lucide React
 
+### Backend and AI Services
 
+- Python 3.11
+- FastAPI (analytics API)
+- Uvicorn
+- Sentence Transformers (all-MiniLM-L6-v2)
+- PyTorch
 
+### Identity and Security
 
+- SPIFFE/SPIRE (workload identity)
+- eBPF observability via Cilium Tetragon
+- OPA-style policy enforcement flow in the demo narrative
 
+### Observability and Logging
+
+- Fluent Bit
+- Parseable
+- Grafana
+
+### DevOps and Runtime
+
+- Docker
+- Docker Compose
+- Node.js and npm
 
 ---
 
 ## Project Setup Instructions
+
+### Prerequisites
+
+Install the following before running the project:
+
+- Docker Desktop (with Docker Compose)
+- Node.js 20+ and npm
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/priyanshu5ingh/hacktofuture4-C06.git
+cd hacktofuture4-C06
+```
+
+### 2. Start backend and infrastructure services
+
+From the project root, run:
+
+```bash
+docker compose up -d --build
+```
+
+This brings up:
+
+- analytics-engine on port 8000
+- parseable on port 8081
+- grafana on port 3000
+- spire-server, spire-agent, mock-agent, tetragon, fluent-bit
+
+### 3. Start the frontend
+
+Open a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The UI will be available at:
+
+- http://localhost:5173
+
+### 4. Useful service URLs
+
+- Frontend: http://localhost:5173
+- Analytics API docs: http://localhost:8000/docs
+- Grafana: http://localhost:3000/login (default credentials: admin / admin)
+- Parseable: http://localhost:8081
+
+### 5. Verify containers are healthy
+
+From the project root:
+
+```bash
+docker compose ps -a
+```
+
+### 6. Stop the stack
+
+```bash
+docker compose down
+```
 
 
 
